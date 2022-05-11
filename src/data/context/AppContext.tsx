@@ -15,4 +15,3 @@ export function AppProvider(props) {
 }
 
 export default AppContext
-export const AppConsumer = AppContext.Consumer

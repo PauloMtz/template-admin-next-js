@@ -1,12 +1,12 @@
 import Layout from "../components/template/Layout";
-import { AppConsumer } from "../data/context/AppContext";
+import useAppData from "../data/hooks/useAppData";
 
 export default function Notificacoes() {
+  const contexto = useAppData()
+
   return (
     <Layout titulo="Notificações" subtitulo="Página de Notificações">
-      <AppConsumer>
-        {dados => <h3>{dados.nome}</h3>}
-      </AppConsumer>
+      <h3>{contexto.nome}</h3>
     </Layout>
   )
 }
