@@ -13,12 +13,11 @@ export default function MenuItem(props: MenuItemProps) {
         return (
             <a className={`
                 flex flex-col justify-center items-center
-                h-20 w-40 text-gray-600 ${props.classeEstilo}
+                h-20 w-40 text-gray-600 dark:text-gray-200
+                ${props.classeEstilo}
             `}>
                 {props.icone}
-                <span className={`
-                    text-xs font-light
-                `}>
+                <span className={`text-xs font-light`}>
                     {props.texto}
                 </span>
             </a>
@@ -27,7 +26,7 @@ export default function MenuItem(props: MenuItemProps) {
 
     return (
         <li onClick={props.cliqueAqui} className={`
-            hover:bg-gray-200
+            hover:bg-gray-200 dark:hover:bg-gray-700
             cursor-pointer
         `}>
             {props.url ? (
