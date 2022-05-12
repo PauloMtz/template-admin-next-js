@@ -1,4 +1,5 @@
-import MenuLateral from "./MenuLateral"
+import useAppData from "../../data/hooks/useAppData"
+import BotaoAlternarTema from "./BotaoAlternarTema"
 import Titulo from "./Titulo"
 
 interface CabecalhoProps {
@@ -7,11 +8,14 @@ interface CabecalhoProps {
 }
 
 export default function Cabecalho(props: CabecalhoProps) {
+    const { tema, alternarTema } = useAppData()
+
     return (
-        <div>
-            <Titulo 
-                titulo={props.titulo}
-                subtitulo={props.subtitulo} />
+        <div className={`flex`}>
+            <Titulo titulo={props.titulo} subtitulo={props.subtitulo} />
+            <div className={`flex flex-grow justify-end items-center`}>
+                <BotaoAlternarTema tema={tema} alternarTema={alternarTema} />
+            </div>
         </div>
     )
 }
