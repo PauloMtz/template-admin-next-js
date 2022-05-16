@@ -1,7 +1,8 @@
 import router from 'next/router'
-import { createContext, useState } from 'react'
+import { createContext, useEffect, useState } from 'react'
 import firebase from '../../firebase/config'
 import Usuario from '../../model/Usuario'
+import cookies from 'js-cookie'
 
 interface AuthContextProps {
     usuario?: Usuario
@@ -23,8 +24,34 @@ async function usuarioNormalizado(usuarioFirebase: firebase.User): Promise<Usuar
     }
 }
 
+function gerenciarCookie(logado: boolean) {
+    if (logado) {
+        cookies.set('admin-template-next-auth', logado, {
+            expires: 1 // dias
+        })
+    } else {
+        cookies.remove('admin-template-next-auth')
+    }
+}
+
 export function AuthProvider(props) {
     const [usuario, setUsuario] = useState<Usuario>(null)
+    const [carregando, setCarregando] = useState(true)
+
+    async function configurarSessao(usuarioFirebase) {
+        if (usuarioFirebase?.email) {
+            const usuarioSessao = await usuarioNormalizado(usuarioFirebase)
+            setUsuario(usuarioSessao)
+            gerenciarCookie(true)
+            setCarregando(false)
+            return usuarioSessao.email
+        } else {
+            setUsuario(null)
+            gerenciarCookie(false)
+            setCarregando(true)
+            return false
+        }
+    }
 
     async function loginGoogle() {
         const resp = await firebase.auth().signInWithPopup(
@@ -32,11 +59,17 @@ export function AuthProvider(props) {
         )
 
         if (resp.user?.email) {
-            const usuarioLogin = await usuarioNormalizado(resp.user)
-            setUsuario(usuarioLogin)
+            /*const usuarioLogin = await usuarioNormalizado(resp.user)
+            setUsuario(usuarioLogin)*/
+            configurarSessao(resp.user)
             router.push('/')
         }
     }
+
+    useEffect(() => {
+        const cancelar = firebase.auth().onIdTokenChanged(configurarSessao)
+        return () => cancelar()
+    }, [])
 
     return (
         <AuthContext.Provider value={{

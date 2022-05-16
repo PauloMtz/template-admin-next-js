@@ -6,7 +6,7 @@ export default function Perfil() {
     <Layout 
       titulo="Perfil" 
       subtitulo="Dados do usuário">
-      <h2>Alguma coisa sobre notificações</h2>
+      <h2>Perfil do usuário</h2>
     </Layout>
   )
 }
