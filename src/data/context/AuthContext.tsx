@@ -7,6 +7,7 @@ import cookies from 'js-cookie'
 interface AuthContextProps {
     usuario?: Usuario
     loginGoogle?: () => Promise<void>
+    logout?: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextProps>({})
@@ -54,27 +55,45 @@ export function AuthProvider(props) {
     }
 
     async function loginGoogle() {
-        const resp = await firebase.auth().signInWithPopup(
-            new firebase.auth.GoogleAuthProvider()
-        )
+        try {
+            setCarregando(true)
+            const resp = await firebase.auth().signInWithPopup(
+                new firebase.auth.GoogleAuthProvider()
+            )
+    
+            if (resp.user?.email) {
+                /*const usuarioLogin = await usuarioNormalizado(resp.user)
+                setUsuario(usuarioLogin)*/
+                configurarSessao(resp.user)
+                router.push('/')
+            }
+        } finally {
+            setCarregando(false)
+        }
+    }
 
-        if (resp.user?.email) {
-            /*const usuarioLogin = await usuarioNormalizado(resp.user)
-            setUsuario(usuarioLogin)*/
-            configurarSessao(resp.user)
-            router.push('/')
+    async function logout() {
+        try {
+            setCarregando(true)
+            await firebase.auth().signOut()
+            await configurarSessao(null)
+        } finally {
+            setCarregando(false)
         }
     }
 
     useEffect(() => {
-        const cancelar = firebase.auth().onIdTokenChanged(configurarSessao)
-        return () => cancelar()
+        if (cookies.get('admin-template-next-auth')) {
+            const cancelar = firebase.auth().onIdTokenChanged(configurarSessao)
+            return () => cancelar()
+        }
     }, [])
 
     return (
         <AuthContext.Provider value={{
             usuario,
-            loginGoogle
+            loginGoogle,
+            logout
         }}>
             {props.children}
         </AuthContext.Provider>

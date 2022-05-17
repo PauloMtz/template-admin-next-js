@@ -1,10 +1,11 @@
-import { read } from "fs";
-import { text } from "stream/consumers";
+import useAuth from "../../data/hooks/useAuth";
 import { IconeAjustes, IconeHome, IconeLogout, IconeSino } from "../icones";
 import Logo from "./Logo";
 import MenuItem from "./MenuItem";
 
 export default function MenuLateral() {
+    const {logout} = useAuth()
+
     return (
         <aside className={`
             flex flex-col 
@@ -25,7 +26,7 @@ export default function MenuLateral() {
             </ul>
             <ul>
                 <MenuItem texto="Sair" icone={IconeLogout}
-                    cliqueAqui={() => console.log("Clicou para sair")}
+                    cliqueAqui={logout}
                     classeEstilo={`
                         text-red-600 dark:text-red-300
                         hover:bg-red-600 hover:text-white
