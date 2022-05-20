@@ -4,7 +4,7 @@ import { IconeAtencao } from "../components/icones";
 import useAuth from "../data/hooks/useAuth";
 
 export default function Autenticacao() {
-    const {usuario, loginGoogle} = useAuth()
+    const {cadastrarUsuario, login, loginGoogle} = useAuth()
     const [email, setEmail] = useState('')
     const [senha, setSenha] = useState('')
     const [modo, setModo] = useState<'login' | 'cadastro'>('login')
@@ -15,11 +15,18 @@ export default function Autenticacao() {
         setTimeout(() => setErro(null), tempoSegundos * 1000)
     }
 
-    function submeter() {
-        if (modo === 'login') {
-            exibirMsgErro("Ocorreu um erro ao efetuar login", 2)
-        } else {
-            exibirMsgErro("Ocorreu um erro ao tentar cadastrar")
+    async function submeter() {
+        try {
+            if (modo === 'login') {
+                await login(email, senha)
+            } else {
+                await cadastrarUsuario(email, senha)
+            }
+        } catch (error) {
+            console.log(error) // pega atributos no console
+            // na mensagem no console tem dois atributos: code e message
+            //exibirMsgErro(error?.message ?? 'Ocorreu um erro ao efetuar login')
+            exibirMsgErro('Ocorreu um erro ao efetuar login')
         }
     }
 
